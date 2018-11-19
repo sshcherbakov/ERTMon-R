@@ -49,12 +49,12 @@
 ## Dependencies load
 ##===========================================================
 
-if( !exists("ertMonDirName") ) {
-  ertMonDirName <- "~/ERTMon-R"
-}
-
-source( file.path( ertMonDirName, "R/DataWrapperClass.R" ) )
-source( file.path( ertMonDirName, "R/DataIngestionFrameworkFunctions.R" ) )
+# if( !exists("ertMonDirName") ) {
+#   ertMonDirName <- "~/ERTMon-R"
+# }
+# 
+# source( file.path( ertMonDirName, "R/DataWrapperClass.R" ) )
+# source( file.path( ertMonDirName, "R/DataIngestionFrameworkFunctions.R" ) )
 
 ##===========================================================
 ## DataIngester hierarchy
