@@ -44,13 +44,13 @@
 # Start date: 2017-11-03
 #---
 
-if( !exists("ertMonDirName") ) {
-  ertMonDirName <- "~/ERTMon-R"
-}
-
-if( !isClass("DataTransformerClass") ) { 
-  source( file.path( ertMonDirName, "R/DataTransformerClass.R" ) )
-}
+# if( !exists("ertMonDirName") ) {
+#   ertMonDirName <- "~/ERTMon-R"
+# }
+# 
+# if( !isClass("DataTransformerClass") ) { 
+#   source( file.path( ertMonDirName, "R/DataTransformerClass.R" ) )
+# }
 
 ##===========================================================
 ## DataTransformerCatMatrices class
