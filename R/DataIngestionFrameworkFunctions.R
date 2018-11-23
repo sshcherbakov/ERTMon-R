@@ -1,6 +1,5 @@
 ##===========================================================
 ## Event records transformations OOP framework functions
-## Copyright (C) 2018  Anton Antonov
 ##
 ## BSD 3-Clause License
 ## 
@@ -227,7 +226,7 @@ AggregateEventRecordsBySpec <- function(specRow, eventRecordsData, entityData, a
 #' @param matLongFormData aggregated event records in long form
 #' @param entityAttributes entity attributes data
 #' @param normalizationFuncSpecToFunc a named elements list of normalization functions
-#' @detail NOT USED ANYMORE. See the method "normalizeGroupsBySpec" of the class DataTransformer.
+#' @details NOT USED ANYMORE. See the method "normalizeGroupsBySpec" of the class DataTransformer.
 NormalizeGroupsBySpec <- function(specRow, matLongFormData, entityAttributes, normalizationFuncSpecToFunc ) {
   
   func <- aggrFuncSpecToFunc[ specRow$Normalization.function[[1]] ][[1]]
@@ -290,6 +289,11 @@ NormalizeGroupsBySpec <- function(specRow, matLongFormData, entityAttributes, no
     
   }
 }
+
+##-----------------------------------------------------------
+## Impose row and column ID's
+##-----------------------------------------------------------
+
 
 ##-----------------------------------------------------------
 ## Verify directory

@@ -1,19 +1,35 @@
 ##=======================================================================================
 ## Data conversion functions in R
-## Copyright (C) 2015  Anton Antonov
 ##
-## This program is free software: you can redistribute it and/or modify
-## it under the terms of the GNU General Public License as published by
-## the Free Software Foundation, either version 3 of the License, or
-## (at your option) any later version.
-## 
-## This program is distributed in the hope that it will be useful,
-## but WITHOUT ANY WARRANTY; without even the implied warranty of
-## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-## GNU General Public License for more details.
-## 
-## You should have received a copy of the GNU General Public License
-## along with this program.  If not, see <http://www.gnu.org/licenses/>.
+## BSD 3-Clause License
+##
+## Copyright (c) 2015, Anton Antonov
+## All rights reserved.
+##
+## Redistribution and use in source and binary forms, with or without
+## modification, are permitted provided that the following conditions are met:
+##
+## * Redistributions of source code must retain the above copyright notice, this
+## list of conditions and the following disclaimer.
+##
+## * Redistributions in binary form must reproduce the above copyright notice,
+## this list of conditions and the following disclaimer in the documentation
+## and/or other materials provided with the distribution.
+##
+## * Neither the name of the copyright holder nor the names of its
+## contributors may be used to endorse or promote products derived from
+## this software without specific prior written permission.
+##
+## THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+## AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+## IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+## DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+## FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+## DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+##          SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+## CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+## OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+## OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ## 
 ## Written by Anton Antonov, 
 ## antononcube@gmail.com,
@@ -28,6 +44,14 @@
 ## Some are for conversion to sparse matrices.
 ##
 ##=======================================================================================
+##
+## This file is included in ERTMon-R R directory in order to simplify ERTMon-R's package 
+## installation and function dependencies load.
+##
+## The most recent version of this file can be found in:
+##     https://github.com/antononcube/MathematicaForPrediction/blob/master/R/DataConversionFunctions.R
+##
+##=======================================================================================
 
 # Load libraries
 library(plyr)
@@ -37,10 +61,12 @@ library(Matrix)
 library(lubridate)
 library(dplyr)
 
+#' Split column of tags.
 #' @description Partition combined columns
 #' @param dataColumn data vector
 #' @param numberOfSplits number of strings into which is field is splitted
 #' @param emptyStringReplacement with what value empty strings are replaced
+#' @export
 SplitColumnOfTags <- function( dataColumn, numberOfSplits, sep = ",", emptyStringReplacement = "null"  ) {
   spCol <- str_split_fixed( dataColumn, sep, numberOfSplits )
   spCol[ spCol == "" ] <- emptyStringReplacement
@@ -50,8 +76,10 @@ SplitColumnOfTags <- function( dataColumn, numberOfSplits, sep = ",", emptyStrin
   spCol
 }
 
+#' Tag baskets matrix into item tag matrix
 #' @description Tag table (an R-matrix) into binary incedence sparse matrix
 #' @param itemTagMat item-tag table
+#' @export
 TagBasketsMatrixIntoItemTagMatrix <- function( itemTagMat ) {
   # Convert to long form
   itRows <-
@@ -65,12 +93,13 @@ TagBasketsMatrixIntoItemTagMatrix <- function( itemTagMat ) {
   SMRCreateItemTagMatrix( itRows, "V1", "V2" )
 }
 
-
+#' File columns ingestion.
 #' @description Given a file name reads the data into column data frame
 #' @param fname filename assumed with suffix "TSV"
 #' @param sep separator
 #' @param header a logical value indicating whether the file contains the names of 
 #' the variables as its first line
+#' @export
 FileColumnsIngest <- function( fname, sep="\t", expectedColumns=3, header=TRUE, apply.iconv = TRUE ) {
   con <- file(fname, "rb")
   if ( apply.iconv ) {
@@ -109,9 +138,11 @@ FileColumnsIngest <- function( fname, sep="\t", expectedColumns=3, header=TRUE, 
   triplets
 }
 
+#' File triplets ingestion.
 #' @description Given a file name reads the data into three-column data frame, removes rows with NA and "null"
 #' @param fname file name
 #' @param sep separator
+#' @export
 FileTripletsIngest <- function( fname, sep="\t" ) {
   lines <- FileColumnsIngest(fname, sep, 3)
   lines[,3] <- as.numeric( lines[,3] )
@@ -123,29 +154,35 @@ FileTripletsIngest <- function( fname, sep="\t" ) {
   lines <- lines[ complete.cases(lines), ]
 }
 
+#' File triplets.
 #' @description Turns the triplet records of a file into a sparse matrix
 #' @param fname file name
 #' @param sep field separator
 #' @param propertiesToStrings should all properties be turned into strings
+#' @export
 FileTriplets <-  function( fname, sep="\t", propertiesToStrings=TRUE ) {
   df <- FileTripletsIngest( fname, sep )
   TripletsToSparseArray( df )
 }
 
+#' Combine two triplets files.
 #' @description Combining the triplets of two files into a sparse matrix
 #' @param fname1 name of the first file
 #' @param fname2 name of the second file
 #' @param sep field separator
 #' @param propertiesToStrings should the properties be converted into stings
+#' @export
 TwoFilesTriplets <- function( fname1, fname2, sep="\t", propertiesToStrings=TRUE ) {
   df1 <- FileTripletsIngest( fname1, sep )
   df2 <- FileTripletsIngest( fname2, sep )
   TripletsToSparseArray( rbind(df1, df2) )
 }
 
+#' Make a sparse array/matrix from triplets.
 #' @description Turns a data frame of three columns (triplets) into a sparse matrix
 #' @param triplets a data frame with three columns
-TripletsToSparseArray <-  function( triplets ) {
+#' @export
+TripletsToSparseMatrix <-  function( triplets ) {
   itemIDs <- unique( triplets[,1] )
   propertyIDs <- unique( triplets[,2] )
   itemIDToIndex <- 1:length(itemIDs)
@@ -164,9 +201,11 @@ TripletsToSparseArray <-  function( triplets ) {
   smat
 }
 
+#' Convert a sparse matrix to triplets data frame.
 #' @description Converts a sparse matrix to triplets
 #' @param smat a sparse matrix
 #' @return a data frame of triplets 
+#' @export
 SparseMatrixToTriplets <- function( smat ) {
   # Use summary() over sparse matrix.
   # Then using rules over the indices.
@@ -185,7 +224,7 @@ SparseMatrixToTriplets <- function( smat ) {
   triplets
 }
 
-
+#' Impose row ID's to a sparse matrix.
 #' @description Makes sure that the rows of a matrix are in 1-to-1 correspondence to an array of row ID's
 #' @param rowIDs an array of row ID's
 #' @param smat a matrix with named rows
@@ -207,6 +246,7 @@ ImposeRowIDs <- function( rowIDs, smat ) {
   smat[rowIDs,,drop=FALSE]
 }
 
+#' Impose column ID's to a sparse matrix.
 #' @description Makes sure that the rows of a matrix are in 1-to-1 correspondence to an array of row ID's
 #' @param colIDs an array of col ID's
 #' @param smat a matrix with named columns
@@ -215,6 +255,10 @@ ImposeColumnIDs <- function( colIDs, smat ) {
   t( ImposeRowIDs( colIDs, t(smat)) )
 }
 
+<<<<<<< HEAD
+=======
+#' Piecewise functon constructor.
+>>>>>>> 1b1525adec50598eeb85b083251970c8bce547a2
 #' @description Make piecewise function for a list of values.
 #' The names of the values are used as function's result.
 #' If the names are NULL they are automatically assign to be ordinals starting from 1.
@@ -253,10 +297,12 @@ MakePiecewiseFunction <- function( points, tags=NULL ) {
   eval( parse( text=funcStr ) )
 }
 
+#' Multi-value column ingestion.
 #' @param itemRows a data frame of flat content data
 #' @param tagTypeColName column name of the relationship to be ingested inge in itemRows
 #' @param itemIDName 
 #' @param nTagsPerField number of tags per field of the column colName in itemRows
+#' @export
 IngestMultiValuedDataColumn <- function( itemRows, tagTypeColName, itemIDColName = "ID", nTagsPerField = 12, split = "," ) {
 
   spdf <- str_split_fixed( itemRows[, tagTypeColName], pattern = split, n=nTagsPerField )
@@ -287,12 +333,14 @@ IngestMultiValuedDataColumn <- function( itemRows, tagTypeColName, itemIDColName
 ## For backward compatibility
 IngestMovieDataColumn <- IngestMultiValuedDataColumn
 
+#' Convert multi-column data frame into a sparse matrix.
 #' @param Multi-column data frame id-tag relationship
 #' @param idColName the column name of the item ID
 #' @param tagTypeColNames names of the tag type column names 
 #' @details This does not work if the tagTypeColNames have dash in them.
 #' I assume because of the string-to-formula conversion in SMRCreateItemTagMatrix.
 #' Obviously, the dependence of the SMRCreateItemTagMatrix can be removed.
+#' @export
 ConvertMultiColumnDataFrameToSparseMatrix <- function( multiColDF, itemColName, tagTypeColNames ) {
 
   emptyColumns <- laply( tagTypeColNames, function(tt) mean( is.na( multiColDF[,tt] ) ) == 1 )
@@ -322,7 +370,7 @@ ConvertMultiColumnDataFrameToSparseMatrix <- function( multiColDF, itemColName, 
 }
 
 
-
+#' Make a matrix by column partitioning.
 #' @description Make categorical representation of the numerical values of a column in a data frame and 
 #' produce a matrix with the derived categorical tags as columns and values of a specified data column as rows. 
 #' @param data a data frame
@@ -332,6 +380,7 @@ ConvertMultiColumnDataFrameToSparseMatrix <- function( multiColDF, itemColName, 
 #' @param leftOverlap vector of weights for the neighboring columns to left
 #' @param rightOverlap vector of weights for the neighboring columns to right
 #' @param colnamesPrefix prefix for the columns names
+#' @export
 MakeMatrixByColumnPartition <- function( data, colNameForRows, colNameForColumns, breaks = 10, leftOverlap = NULL, rightOverlap = NULL, colnamesPrefix = "" ) {
 
   if( is.numeric( breaks ) && length( breaks ) == 1 ) {
@@ -377,11 +426,13 @@ MakeMatrixByColumnPartition <- function( data, colNameForRows, colNameForColumns
   smat
 }
 
+#' Convert to incidence matrix by column values.
 #' @description Replaces each a column of a integer matrix with number of columns corresponding to the integer values.
 #' The matrix [[2,3],[1,2]] is converted to [[0,0,1,0,0,0,0,1],[0,1,0,0,0,0,1,0]] .
 #' @param mat an integer matrix to be converted to column value incidence matrix.
 #' @param rowNames boolean to assign or not the result matrix row names to be the argument matrix row names
 #' @param colNames boolean to assign or not the result matrix column names derived from the argument matrix column names
+#' @export
 ToColumnValueIncidenceMatrix <- function( mat, rowNames = TRUE, colNames = TRUE ) {
 
    tmat <- as( mat, "dgCMatrix")
