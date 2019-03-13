@@ -255,10 +255,7 @@ ImposeColumnIDs <- function( colIDs, smat ) {
   t( ImposeRowIDs( colIDs, t(smat)) )
 }
 
-<<<<<<< HEAD
-=======
 #' Piecewise functon constructor.
->>>>>>> 1b1525adec50598eeb85b083251970c8bce547a2
 #' @description Make piecewise function for a list of values.
 #' The names of the values are used as function's result.
 #' If the names are NULL they are automatically assign to be ordinals starting from 1.
